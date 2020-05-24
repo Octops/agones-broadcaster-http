@@ -39,7 +39,7 @@ var (
 var rootCmd = &cobra.Command{
 	Use:   "agones-broadcaster-http",
 	Short: "A brief description of your application",
-	Long: "",
+	Long:  "",
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg, err := clientcmd.BuildConfigFromFlags(masterURL, kubeconfig)
 		if err != nil {

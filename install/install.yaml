@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: agones-events-controller
+  labels:
+    app: agones-event-broadcaster
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: agones-events-controller
+  labels:
+    app: agones-event-broadcaster
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list", "watch"]
+  - apiGroups: ["agones.dev"]
+    resources: ["gameservers",]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: agones-events-controller
+  labels:
+    app: agones-event-broadcaster
+subjects:
+  - kind: User
+    name: system:serviceaccount:default:agones-events-controller
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: agones-events-controller
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agones-broadcaster-http
+spec:
+  selector:
+    app: agones-broadcaster-http
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agones-broadcaster-http
+  labels:
+    app: agones-broadcaster-http
+spec:
+  selector:
+    matchLabels:
+      app: agones-broadcaster-http
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: agones-broadcaster-http
+    spec:
+      serviceAccountName: agones-events-controller
+      containers:
+        - name: agones-events-controller
+          image: octops/agones-broadcaster-http:latest
+          imagePullPolicy: Always
