@@ -16,16 +16,24 @@ limitations under the License.
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"github.com/Octops/agones-broadcaster-http/pkg/server"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"k8s.io/client-go/tools/clientcmd"
 	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var (
+	cfgFile    string
+	kubeconfig string
+	masterURL  string
+	addr       string
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -33,7 +41,20 @@ var rootCmd = &cobra.Command{
 	Short: "A brief description of your application",
 	Long: "",
 	Run: func(cmd *cobra.Command, args []string) {
-		logrus.Info("RUNNING")
+		cfg, err := clientcmd.BuildConfigFromFlags(masterURL, kubeconfig)
+		if err != nil {
+			logrus.Fatalf("Error building kubeconfig: %s", err.Error())
+		}
+
+		ctx := context.Background()
+		srv, err := server.NewServer(cfg, addr)
+		if err != nil {
+			logrus.WithError(err).Fatal("error creating server")
+		}
+
+		if err := srv.Start(ctx); err != nil {
+			logrus.WithError(err).Fatal("error starting server")
+		}
 	},
 }
 
@@ -54,6 +75,9 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.agones-broadcaster-http.yaml)")
+	rootCmd.Flags().StringVar(&kubeconfig, "kubeconfig", "", "Set KUBECONFIG")
+	rootCmd.Flags().StringVar(&masterURL, "master", "", "The addr of the Kubernetes API server. Overrides any value in kubeconfig. Only required if out-of-cluster.")
+	rootCmd.Flags().StringVar(&addr, "addr", ":8000", "The addr of the HTTP server.")
 }
 
 // initConfig reads in config file and ENV variables if set.
