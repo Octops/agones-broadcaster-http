@@ -11,6 +11,7 @@ Considerations:
 - It is not possible to recover information from the GameServers if the service is not up and running
 - Every time the service starts it will re-sync the in-memory cache from scratch
 - If the state of a GameServer changes due to any circumstances, the broadcaster will update the cached info in nearly realtime 
+- The service can't be used for updating data
 
 **Important**
 
