@@ -21,6 +21,7 @@ type gameserver struct {
 	Address   string            `json:"addr"`
 	Port      int32             `json:"port"`
 	State     string            `json:"state"`
+	NodeName  string            `json:"node_name"`
 }
 
 type HTTPBroker struct {
@@ -38,7 +39,7 @@ func NewHTTPBroker(addr string) *HTTPBroker {
 
 func (h *HTTPBroker) Start(ctx context.Context) {
 	mux := http.NewServeMux()
-	mux.Handle("/", http.HandlerFunc(h.Handler))
+	mux.Handle("/gameservers", http.HandlerFunc(h.Handler))
 
 	srv := &http.Server{
 		Addr:    h.addr,
@@ -128,9 +129,12 @@ func (h *HTTPBroker) ListGameServer() map[string]*gameserver {
 }
 
 func (h *HTTPBroker) handleAdded(gsAgones *v1.GameServer) error {
+	gs := GameServer(gsAgones)
 	if gsAgones.Status.State == v1.GameServerStateReady {
-		return h.AddGameServer(GameServer(gsAgones))
+		return h.AddGameServer(gs)
 	}
+
+	h.DeleteGameServer(gs.Namespaced())
 
 	return nil
 }
@@ -139,27 +143,42 @@ func (h *HTTPBroker) handleUpdated(message interface{}) error {
 	msgUpdate := reflect.ValueOf(message)
 	gsAgones := msgUpdate.Field(1).Interface().(*v1.GameServer)
 
+	gs := GameServer(gsAgones)
 	if gsAgones.Status.State == v1.GameServerStateReady {
-		return h.AddGameServer(GameServer(gsAgones))
+		return h.AddGameServer(gs)
 	}
+
+	h.DeleteGameServer(gs.Namespaced())
 
 	return nil
 }
 
 func (h *HTTPBroker) handleDeleted(gsAgones *v1.GameServer) error {
 	key := fmt.Sprintf("%s/%s", gsAgones.Namespace, gsAgones.Name)
+
 	h.DeleteGameServer(key)
 	logrus.Infof("gameserver deleted %s", key)
+
 	return nil
 }
 
 func GameServer(gs *v1.GameServer) *gameserver {
+	var port int32
+	if len(gs.Status.Ports) > 0 {
+		port = gs.Status.Ports[0].Port
+	}
+
 	return &gameserver{
 		Name:      gs.Name,
 		Namespace: gs.Namespace,
 		Labels:    gs.Labels,
 		Address:   gs.Status.Address,
-		Port:      gs.Status.Ports[0].Port,
+		Port:      port,
 		State:     string(gs.Status.State),
+		NodeName:  gs.Status.NodeName,
 	}
+}
+
+func (gs *gameserver) Namespaced() string {
+	return fmt.Sprintf("%s/%s", gs.Namespace, gs.Name)
 }
