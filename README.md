@@ -20,50 +20,41 @@ Only information from GameServers in a `Ready` state will be returned.
 The service returns `json` data in a non specific order. An example is shown below.
 ```json
 {
-   "default/simple-udp-agones-0":{
-      "name":"simple-udp-agones-0",
-      "namespace":"default",
-      "labels":{
-         "version":"v1"
+   "items":[
+      {
+         "name":"simple-udp-agones-1",
+         "namespace":"default",
+         "labels":{
+            "version":"v1"
+         },
+         "addr":"172.17.0.2",
+         "port":7412,
+         "state":"Ready",
+         "node_name":"node-us-central1-pool-172-17-0-2"
       },
-      "addr":"172.17.0.2",
-      "port":7264,
-      "state":"Ready",
-      "node_name": "node-us-central1-pool-172-17-0-2"
-   },
-   "default/simple-udp-agones-1":{
-      "name":"simple-udp-agones-1",
-      "namespace":"default",
-      "labels":{
-         "version":"v1"
+      {
+         "name":"simple-udp-agones-2",
+         "namespace":"default",
+         "labels":{
+            "version":"v1"
+         },
+         "addr":"172.17.0.2",
+         "port":7080,
+         "state":"Ready",
+         "node_name":"node-us-central1-pool-172-17-0-2"
       },
-      "addr":"172.17.0.2",
-      "port":7298,
-      "state":"Ready",
-      "node_name": "node-us-central1-pool-172-17-0-2"
-   },
-   "default/simple-udp-agones-2":{
-      "name":"simple-udp-agones-2",
-      "namespace":"default",
-      "labels":{
-         "version":"v1"
-      },
-      "addr":"172.17.0.2",
-      "port":7565,
-      "state":"Ready",
-      "node_name": "node-us-central1-pool-172-17-0-2"
-   },
-   "default/simple-udp-agones-3":{
-      "name":"simple-udp-agones-3",
-      "namespace":"default",
-      "labels":{
-         "version":"v1"
-      },
-      "addr":"172.17.0.2",
-      "port":7009,
-      "state":"Ready",
-      "node_name": "node-us-central1-pool-172-17-0-2"
-   }
+      {
+         "name":"simple-udp-agones-3",
+         "namespace":"default",
+         "labels":{
+            "version":"v1"
+         },
+         "addr":"172.17.0.2",
+         "port":7611,
+         "state":"Ready",
+         "node_name":"node-us-central1-pool-172-17-0-2"
+      }
+   ]
 }
 ```
 
@@ -94,7 +85,7 @@ Use Kubernetes port-forward mechanism to access the service's endpoint running w
 $ kubectl [-n NAMESPACE_NAME] port-forward port-forward svc/agones-broadcaster-http 8000
 
 # Terminal session #2
-$ curl localhost:8000/gameservers
+$ curl localhost:8000/api/gameservers
 ```
 
 ### In-Cluster
