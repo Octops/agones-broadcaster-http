@@ -39,7 +39,7 @@ func NewHTTPBroker(addr string) *HTTPBroker {
 
 func (h *HTTPBroker) Start(ctx context.Context) {
 	mux := http.NewServeMux()
-	mux.Handle("/gameservers", http.HandlerFunc(h.Handler))
+	mux.Handle("/api/gameservers", http.HandlerFunc(h.Handler))
 
 	srv := &http.Server{
 		Addr:    h.addr,
@@ -100,7 +100,15 @@ func (h *HTTPBroker) SendMessage(envelope *events.Envelope) error {
 
 func (h *HTTPBroker) Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(h.ListGameServer())
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	gsResponse := []*gameserver{}
+	for _, gs := range h.ListGameServer() {
+		gsResponse = append(gsResponse, gs)
+	}
+
+	_ = json.NewEncoder(w).Encode(gsResponse)
 }
 
 func (h *HTTPBroker) AddGameServer(gs *gameserver) error {
