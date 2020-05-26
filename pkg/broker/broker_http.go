@@ -39,7 +39,7 @@ func NewHTTPBroker(addr string) *HTTPBroker {
 
 func (h *HTTPBroker) Start(ctx context.Context) {
 	mux := http.NewServeMux()
-	mux.Handle("/gameservers", http.HandlerFunc(h.Handler))
+	mux.Handle("/api/gameservers", http.HandlerFunc(h.Handler))
 
 	srv := &http.Server{
 		Addr:    h.addr,
