@@ -100,7 +100,8 @@ func (h *HTTPBroker) SendMessage(envelope *events.Envelope) error {
 
 func (h *HTTPBroker) Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(h.ListGameServer())
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }
 
 func (h *HTTPBroker) AddGameServer(gs *gameserver) error {
