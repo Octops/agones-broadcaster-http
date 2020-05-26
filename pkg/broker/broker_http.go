@@ -102,6 +102,13 @@ func (h *HTTPBroker) Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	gsResponse := []*gameserver{}
+	for _, gs := range h.ListGameServer() {
+		gsResponse = append(gsResponse, gs)
+	}
+
+	_ = json.NewEncoder(w).Encode(gsResponse)
 }
 
 func (h *HTTPBroker) AddGameServer(gs *gameserver) error {
