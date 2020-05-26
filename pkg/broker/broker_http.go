@@ -24,6 +24,10 @@ type gameserver struct {
 	NodeName  string            `json:"node_name"`
 }
 
+type GameServerResponse struct {
+	Items []*gameserver `json:"items"`
+}
+
 type HTTPBroker struct {
 	mutex sync.Mutex
 	addr  string
@@ -108,7 +112,9 @@ func (h *HTTPBroker) Handler(w http.ResponseWriter, r *http.Request) {
 		gsResponse = append(gsResponse, gs)
 	}
 
-	_ = json.NewEncoder(w).Encode(gsResponse)
+	_ = json.NewEncoder(w).Encode(GameServerResponse{
+		gsResponse,
+	})
 }
 
 func (h *HTTPBroker) AddGameServer(gs *gameserver) error {
