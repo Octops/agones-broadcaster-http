@@ -25,7 +25,7 @@ type gameserver struct {
 }
 
 type GameServerResponse struct {
-	Items []*gameserver `json:"items"`
+	Gameservers []*gameserver `json:"gameservers"`
 }
 
 type HTTPBroker struct {

@@ -20,7 +20,7 @@ Only information from GameServers in a `Ready` state will be returned.
 The service returns `json` data in a non specific order. An example is shown below.
 ```json
 {
-   "items":[
+   "gameservers":[
       {
          "name":"simple-udp-agones-1",
          "namespace":"default",
