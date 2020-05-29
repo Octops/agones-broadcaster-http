@@ -18,11 +18,12 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"github.com/Octops/agones-broadcaster-http/pkg/server"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"k8s.io/client-go/tools/clientcmd"
-	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
