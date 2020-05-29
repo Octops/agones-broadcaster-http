@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+
 	"github.com/Octops/agones-broadcaster-http/pkg/broker"
 	"github.com/Octops/agones-event-broadcaster/pkg/broadcaster"
 	"k8s.io/client-go/rest"
