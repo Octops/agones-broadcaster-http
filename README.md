@@ -82,7 +82,7 @@ Use Kubernetes port-forward mechanism to access the service's endpoint running w
 
 ```bash
 # Terminal session #1
-$ kubectl [-n NAMESPACE_NAME] port-forward port-forward svc/agones-broadcaster-http 8000
+$ kubectl [-n NAMESPACE_NAME] port-forward svc/agones-broadcaster-http 8000
 
 # Terminal session #2
 $ curl localhost:8000/api/gameservers
