@@ -1,17 +1,15 @@
-FROM golang:1.14 AS builder
+FROM golang:1.17 AS builder
 
 WORKDIR /go/src/github.com/Octops/agones-broadcaster-http
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ./bin/broadcaster-http .
+RUN make build && chmod +x /go/src/github.com/Octops/agones-broadcaster-http/bin/broadcaster-http
 
-FROM alpine
+FROM gcr.io/distroless/static:nonroot
 
 WORKDIR /app
 
 COPY --from=builder /go/src/github.com/Octops/agones-broadcaster-http/bin/broadcaster-http /app/
-
-RUN chmod +x broadcaster-http
 
 ENTRYPOINT ["./broadcaster-http"]
