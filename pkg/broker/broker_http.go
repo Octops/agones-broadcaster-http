@@ -9,10 +9,14 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Octops/agones-event-broadcaster/pkg/brokers"
+
 	v1 "agones.dev/agones/pkg/apis/agones/v1"
 	"github.com/Octops/agones-event-broadcaster/pkg/events"
 	"github.com/sirupsen/logrus"
 )
+
+var _ brokers.Broker = (*HTTPBroker)(nil)
 
 type gameserver struct {
 	Name      string            `json:"name"`
