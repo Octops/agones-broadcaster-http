@@ -19,6 +19,11 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/Octops/agones-broadcaster-http/pkg/broker"
 
 	"github.com/Octops/agones-broadcaster-http/pkg/server"
 	"github.com/sirupsen/logrus"
@@ -30,10 +35,13 @@ import (
 )
 
 var (
-	cfgFile    string
-	kubeconfig string
-	masterURL  string
-	addr       string
+	cfgFile            string
+	kubeconfig         string
+	masterURL          string
+	addr               string
+	syncPeriod         string
+	controllerPort     int
+	metricsBindAddress string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -47,8 +55,23 @@ var rootCmd = &cobra.Command{
 			logrus.Fatalf("Error building kubeconfig: %s", err.Error())
 		}
 
-		ctx := context.Background()
-		srv, err := server.NewServer(cfg, addr)
+		duration, err := time.ParseDuration(syncPeriod)
+		if err != nil {
+			logrus.WithError(err).Fatalf("error parsing sync-period flag: %s", syncPeriod)
+		}
+
+		ctx, stop := signal.NotifyContext(context.TODO(), syscall.SIGTERM, syscall.SIGINT)
+		defer stop()
+
+		srvConfig := &server.Config{
+			Addr:               addr,
+			SyncPeriod:         duration,
+			ControllerPort:     controllerPort,
+			MetricsBindAddress: metricsBindAddress,
+		}
+
+		b := broker.NewHTTPBroker(addr)
+		srv, err := server.NewServer(cfg, srvConfig, b)
 		if err != nil {
 			logrus.WithError(err).Fatal("error creating server")
 		}
@@ -79,6 +102,9 @@ func init() {
 	rootCmd.Flags().StringVar(&kubeconfig, "kubeconfig", "", "Set KUBECONFIG")
 	rootCmd.Flags().StringVar(&masterURL, "master", "", "The addr of the Kubernetes API server. Overrides any value in kubeconfig. Only required if out-of-cluster.")
 	rootCmd.Flags().StringVar(&addr, "addr", ":8000", "The addr of the HTTP server.")
+	rootCmd.Flags().IntVar(&controllerPort, "port", 8880, "The port the controller will expose webhook endpoints")
+	rootCmd.Flags().StringVar(&syncPeriod, "sync-period", "15s", "Determines the minimum frequency at which watched resources are reconciled")
+	rootCmd.Flags().StringVar(&metricsBindAddress, "metrics-bind-address", ":9090", "The TCP address that the controller should bind to for serving prometheus metrics")
 }
 
 // initConfig reads in config file and ENV variables if set.
