@@ -30,7 +30,11 @@ The service returns `json` data in a non specific order. An example is shown bel
          "addr":"172.17.0.2",
          "port":7412,
          "state":"Ready",
-         "node_name":"node-us-central1-pool-172-17-0-2"
+         "node_name":"node-us-central1-pool-172-17-0-2",
+         "players": {
+             "capacity": 10,
+             "count": 2
+         }
       },
       {
          "name":"simple-udp-agones-2",
@@ -41,7 +45,11 @@ The service returns `json` data in a non specific order. An example is shown bel
          "addr":"172.17.0.2",
          "port":7080,
          "state":"Ready",
-         "node_name":"node-us-central1-pool-172-17-0-2"
+         "node_name":"node-us-central1-pool-172-17-0-2",
+         "players": {
+             "capacity": 10,
+             "count": 0
+         }
       },
       {
          "name":"simple-udp-agones-3",
@@ -52,7 +60,11 @@ The service returns `json` data in a non specific order. An example is shown bel
          "addr":"172.17.0.2",
          "port":7611,
          "state":"Ready",
-         "node_name":"node-us-central1-pool-172-17-0-2"
+         "node_name":"node-us-central1-pool-172-17-0-2",
+         "players": {
+             "capacity": 10,
+             "count": 9
+         }        
       }
    ]
 }
