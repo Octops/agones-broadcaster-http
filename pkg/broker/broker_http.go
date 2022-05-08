@@ -168,13 +168,14 @@ func (h *HTTPBroker) handleUpdated(message interface{}) error {
 	gsAgones := msgUpdate.Field(1).Interface().(*v1.GameServer)
 
 	gs := GameServer(gsAgones)
-	if gsAgones.Status.State == v1.GameServerStateReady {
+
+	switch gsAgones.Status.State {
+	case v1.GameServerStateReady, v1.GameServerStateAllocated, v1.GameServerStateScheduled:
 		return h.AddGameServer(gs)
+	default:
+		h.DeleteGameServer(gs.Namespaced())
+		return nil
 	}
-
-	h.DeleteGameServer(gs.Namespaced())
-
-	return nil
 }
 
 func (h *HTTPBroker) handleDeleted(gsAgones *v1.GameServer) error {
