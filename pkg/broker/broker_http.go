@@ -19,13 +19,19 @@ import (
 var _ brokers.Broker = (*HTTPBroker)(nil)
 
 type gameserver struct {
-	Name      string            `json:"name"`
-	Namespace string            `json:"namespace"`
-	Labels    map[string]string `json:"labels"`
-	Address   string            `json:"addr"`
-	Port      int32             `json:"port"`
-	State     string            `json:"state"`
-	NodeName  string            `json:"node_name"`
+	Name      string            `json:"name,omitempty"`
+	Namespace string            `json:"namespace,omitempty"`
+	Labels    map[string]string `json:"labels,omitempty"`
+	Address   string            `json:"addr,omitempty"`
+	Port      int32             `json:"port,omitempty"`
+	State     string            `json:"state,omitempty"`
+	NodeName  string            `json:"node_name,omitempty"`
+	Players   players           `json:"players,omitempty"`
+}
+
+type players struct {
+	Capacity int64 `json:"capacity"`
+	Count    int64 `json:"count"`
 }
 
 type GameServerResponse struct {
@@ -186,7 +192,7 @@ func GameServer(gs *v1.GameServer) *gameserver {
 		port = gs.Status.Ports[0].Port
 	}
 
-	return &gameserver{
+	result := &gameserver{
 		Name:      gs.Name,
 		Namespace: gs.Namespace,
 		Labels:    gs.Labels,
@@ -195,6 +201,15 @@ func GameServer(gs *v1.GameServer) *gameserver {
 		State:     string(gs.Status.State),
 		NodeName:  gs.Status.NodeName,
 	}
+
+	if gs.Status.Players != nil {
+		result.Players = players{
+			Capacity: gs.Status.Players.Capacity,
+			Count:    gs.Status.Players.Count,
+		}
+	}
+
+	return result
 }
 
 func (gs *gameserver) Namespaced() string {
