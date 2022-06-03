@@ -7,11 +7,14 @@ This project leverages the https://github.com/Octops/agones-event-broadcaster an
 
 All the information from the GameServers returned from the [Agones Event Broadcaster](https://github.com/Octops/agones-event-broadcaster) is kept in memory only. There is no persistent storage available.
 
+Single pod is enough to start collecting and publishing states.
+
 Considerations:
 - It is not possible to recover information from the GameServers if the service is not up and running
 - Every time the service starts it will re-sync the in-memory cache from scratch
 - If the state of a GameServer changes due to any circumstances, the broadcaster will update the cached info in nearly realtime 
 - The service can't be used for updating data
+- You may run container out of gameserver cluster, but should provider kubeconfig to connect to external gameserver cluster
 
 **Important**
 
@@ -68,6 +71,21 @@ The service returns `json` data in a non specific order. An example is shown bel
       }
    ]
 }
+```
+
+**API examples**
+
+The filtering mechanism is very flexible.
+You can query using any label set and fields like `players.Count`, `players.Capacity` and `players.IDs`, allocation `state`. 
+Player ID can be any kind of ID.
+For numeric fields can check for equal, greater, greater or equal, lower, lower or equal etc. 
+
+
+```http
+GET /api/gameservers?labels=region=us-central1-1&players_count=lt:10
+GET /api/v1/gameservers?labels=region=us-central1-1,mode=deathmatch&players_capacity=eq:20
+GET /api/v1/gameservers?state=Allocated
+GET /api/v1/gameservers?players_ids=10,23,45,99,134
 ```
 
 ## Install
