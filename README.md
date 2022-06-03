@@ -80,12 +80,11 @@ You can query using any label set and fields like `players.Count`, `players.Capa
 Player ID can be any kind of ID.
 For numeric fields can check for equal, greater, greater or equal, lower, lower or equal etc. 
 
-
 ```http
 GET /api/gameservers?labels=region=us-central1-1&players_count=lt:10
-GET /api/v1/gameservers?labels=region=us-central1-1,mode=deathmatch&players_capacity=eq:20
-GET /api/v1/gameservers?state=Allocated
-GET /api/v1/gameservers?players_ids=10,23,45,99,134
+GET /api/gameservers?labels=region=us-central1-1,mode=deathmatch&players_capacity=eq:20
+GET /api/gameservers?state=Allocated
+GET /api/gameservers?players_ids=10,23,45,99,134
 ```
 
 ## Install
