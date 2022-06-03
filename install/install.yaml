@@ -44,7 +44,12 @@ spec:
   ports:
     - protocol: TCP
       port: 8000
-      targetPort: 8000
+      targetPort: addr
+      name: addr
+    - protocol: TCP
+      name: metrics
+      port: 9090
+      targetPort: metrics  
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -69,3 +74,10 @@ spec:
         - name: agones-events-controller
           image: octops/agones-broadcaster-http:v0.1.9-alpha
           imagePullPolicy: Always
+          ports:
+            - containerPort: 9090
+              name: metrics
+              protocol: TCP
+            - containerPort: 8000
+              name: addr
+              protocol: TCP          
