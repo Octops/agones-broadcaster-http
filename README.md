@@ -15,7 +15,7 @@ Considerations:
 
 **Important**
 
-Only information from GameServers in a `Ready` state will be returned.
+Only information from GameServers in a `Scheduled, Ready or Allocated` state will be returned.
 
 The service returns `json` data in a non specific order. An example is shown below.
 ```json
