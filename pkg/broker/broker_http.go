@@ -170,7 +170,7 @@ func (h *HTTPBroker) handleUpdated(message interface{}) error {
 	gs := GameServer(gsAgones)
 
 	switch gsAgones.Status.State {
-	case v1.GameServerStateReady, v1.GameServerStateAllocated, v1.GameServerStateScheduled:
+	case v1.GameServerStateReady, v1.GameServerStateAllocated, v1.GameServerStateScheduled, v1.GameServerStateReserved:
 		return h.AddGameServer(gs)
 	default:
 		h.DeleteGameServer(gs.Namespaced())
