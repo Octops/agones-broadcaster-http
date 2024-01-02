@@ -1,16 +1,23 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: octops-system
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: agones-events-controller
+  name: octops-broadcaster-http
+  namespace: octops-system
   labels:
-    app: agones-event-broadcaster
+    app: octops-broadcaster-http
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: agones-events-controller
+  name: octops-broadcaster-http
   labels:
-    app: agones-event-broadcaster
+    app: octops-broadcaster-http
 rules:
   - apiGroups: [""]
     resources: ["pods"]
@@ -22,25 +29,26 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: agones-events-controller
+  name: octops-broadcaster-http
   labels:
-    app: agones-event-broadcaster
+    app: octops-broadcaster-http
 subjects:
   - kind: User
-    name: system:serviceaccount:default:agones-events-controller
+    name: system:serviceaccount:octops-system:octops-broadcaster-http
     apiGroup: rbac.authorization.k8s.io
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: agones-events-controller
+  name: octops-broadcaster-http
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: agones-broadcaster-http
+  name: octops-broadcaster-http
+  namespace: octops-system
 spec:
   selector:
-    app: agones-broadcaster-http
+    app: octops-broadcaster-http
   ports:
     - protocol: TCP
       port: 8000
@@ -49,23 +57,26 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: agones-broadcaster-http
+  name: octops-broadcaster-http
+  namespace: octops-system
   labels:
-    app: agones-broadcaster-http
+    app: octops-broadcaster-http
 spec:
   selector:
     matchLabels:
-      app: agones-broadcaster-http
+      app: octops-broadcaster-http
   replicas: 1
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: agones-broadcaster-http
+        app: octops-broadcaster-http
     spec:
-      serviceAccountName: agones-events-controller
+      serviceAccountName: octops-broadcaster-http
       containers:
-        - name: agones-events-controller
+        - name: controller
           image: octops/agones-broadcaster-http:v0.2.0-alpha
           imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
