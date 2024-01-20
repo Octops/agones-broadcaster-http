@@ -94,7 +94,7 @@ Use Kubernetes port-forward mechanism to access the service's endpoint running w
 
 ```bash
 # Terminal session #1
-$ kubectl [-n NAMESPACE_NAME] port-forward svc/agones-broadcaster-http 8000
+$ kubectl [-n NAMESPACE_NAME] port-forward svc/octops-broadcaster-http 8000
 
 # Terminal session #2
 $ curl localhost:8000/api/gameservers
@@ -102,7 +102,7 @@ $ curl localhost:8000/api/gameservers
 
 ### In-Cluster
 
-The service's endpoint will be available to other services running within the cluster using the internal DNS name `agones-broadcaster-http.default.svc.cluster.local`.
+The service's endpoint will be available to other services running within the cluster using the internal DNS name `octops-broadcaster-http.default.svc.cluster.local`.
 
 ### External World
 
